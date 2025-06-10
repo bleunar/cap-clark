@@ -12,10 +12,8 @@ rider_bp = Blueprint('rider_bp', __name__)
 def dashboard():
     rider_id_bytes = uuid.UUID(session['user_id']).bytes
     
-    # Find the rider's current active delivery (if any)
     active_delivery = Order.query.filter_by(rider_id=rider_id_bytes, order_status='picked_up').first()
     
-    # If no active delivery, find available orders
     available_orders = []
     if not active_delivery:
         available_orders = Order.query.filter_by(order_status='ready_for_pickup').order_by(Order.created_at.asc()).all()
@@ -28,7 +26,6 @@ def dashboard():
 def accept_delivery(order_uuid):
     rider_id_bytes = uuid.UUID(session['user_id']).bytes
 
-    # Check if rider already has an active delivery
     if Order.query.filter_by(rider_id=rider_id_bytes, order_status='picked_up').first():
         flash("You already have an active delivery. Please complete it first.", 'warning')
         return redirect(url_for('rider_bp.dashboard'))
@@ -36,7 +33,6 @@ def accept_delivery(order_uuid):
     order_id_bytes = uuid.UUID(order_uuid).bytes
     order = Order.query.get(order_id_bytes)
 
-    # Check if the order is still available
     if order and order.order_status == 'ready_for_pickup':
         order.rider_id = rider_id_bytes
         order.order_status = 'picked_up'
@@ -55,10 +51,7 @@ def complete_delivery(order_uuid):
     order_id_bytes = uuid.UUID(order_uuid).bytes
     order = Order.query.get(order_id_bytes)
 
-    # Check if this order is assigned to the current rider
     if order and order.rider_id == rider_id_bytes and order.order_status == 'picked_up':
-        # Here, you would typically also have the customer confirm receipt.
-        # For this project, the rider's confirmation is the final step.
         order.order_status = 'delivered'
         db.session.commit()
         flash("Delivery marked as complete. Thank you!", 'success')

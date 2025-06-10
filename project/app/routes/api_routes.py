@@ -1,4 +1,3 @@
-# /food-delivery-app/app/routes/api_routes.py
 from flask import Blueprint, request, jsonify, session
 from app import db
 from ..models.user import User

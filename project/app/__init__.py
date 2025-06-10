@@ -1,10 +1,8 @@
-# /food-delivery-app/app/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from config import Config
 
-# Initialize extensions
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -12,11 +10,9 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Initialize extensions with the app
     db.init_app(app)
     bcrypt.init_app(app)
 
-    # Import and register blueprints
     from .routes.auth_routes import auth_bp
     from .routes.customer_routes import customer_bp
     from .routes.owner_routes import owner_bp
@@ -29,8 +25,7 @@ def create_app(config_class=Config):
     app.register_blueprint(rider_bp, url_prefix='/rider')
     app.register_blueprint(api_bp, url_prefix='/api')
     
-    # Import models here to ensure they are registered with SQLAlchemy
     with app.app_context():
-        from . import models # This line is important
+        from . import models
 
     return app

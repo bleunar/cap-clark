@@ -10,7 +10,6 @@
             <div class="card-body">
                 <h5 class="card-title text-capitalize">{{ shop.name }}</h5>
                 <p class="card-text text-capitalize"><small class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ shop.town }}</small></p>
-                <p class="card-text text-capitalize">{{ shop.description or "No description available." }}</p>
                 <a href="{{ url_for('customer_bp.view_shop', shop_uuid=shop.get_uuid()) }}" class="btn btn-primary">View Menu</a>
             </div>
         </div>

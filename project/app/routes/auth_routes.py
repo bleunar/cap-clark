@@ -9,17 +9,14 @@ auth_bp = Blueprint('auth_bp', __name__)
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # Common fields
         email = request.form.get('email')
         password = request.form.get('password')
         role = request.form.get('role')
 
-        # Check if user already exists
         if User.query.filter_by(email=email).first():
             flash('Email address already registered.', 'danger')
             return redirect(url_for('auth_bp.register'))
 
-        # Create new user
         new_user = User(
             id=uuid.uuid4().bytes,
             first_name=request.form.get('first_name'),
@@ -32,7 +29,6 @@ def register():
 
         db.session.add(new_user)
         
-        # If user is an owner, create a shop for them
         if role == 'owner':
             new_shop = Shop(
                 id=uuid.uuid4().bytes,
@@ -59,14 +55,12 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and user.check_password(password):
-            # Store user info in session
             session['user_id'] = str(user.get_uuid())
             session['user_role'] = user.role
             session['user_name'] = user.first_name
             
             flash(f'Welcome back, {user.first_name}!', 'success')
 
-            # Redirect based on role
             if user.role == 'customer':
                 return redirect(url_for('customer_bp.dashboard'))
             elif user.role == 'owner':

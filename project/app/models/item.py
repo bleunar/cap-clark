@@ -14,7 +14,6 @@ class Item(db.Model):
     is_available = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    # Relationship
     shop = db.relationship('Shop', back_populates='items')
 
     def get_uuid(self):

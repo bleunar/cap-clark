@@ -37,13 +37,11 @@ def add_to_cart(item_uuid):
     cart = session.get('cart', {})
     quantity = int(request.form.get('quantity', 1))
 
-    # Add or update item quantity in cart
     cart[item_uuid] = cart.get(item_uuid, 0) + quantity
     
     session['cart'] = cart
     flash('Item added to cart.', 'success')
     
-    # Redirect back to the shop page
     item_id_bytes = uuid.UUID(item_uuid).bytes
     item = Item.query.get(item_id_bytes)
     return redirect(url_for('customer_bp.view_shop', shop_uuid=str(item.shop.get_uuid())))
@@ -85,7 +83,6 @@ def update_cart(item_uuid):
     if new_quantity > 0:
         cart[item_uuid] = new_quantity
     elif new_quantity == 0:
-        # Remove item if quantity is 0
         if item_uuid in cart:
             del cart[item_uuid]
 
@@ -102,7 +99,6 @@ def checkout():
         flash('Your cart is empty.', 'warning')
         return redirect(url_for('customer_bp.dashboard'))
     
-    # Calculate total and gather items
     cart_items_data = []
     total_price = 0
     shop_id = None
@@ -111,7 +107,6 @@ def checkout():
         item_id_bytes = uuid.UUID(item_uuid_str).bytes
         item = Item.query.get(item_id_bytes)
         if item:
-            # All items in a single order must come from the same shop
             if shop_id is None:
                 shop_id = item.shop_id
             elif shop_id != item.shop_id:
@@ -129,7 +124,6 @@ def checkout():
             
         customer_id_bytes = uuid.UUID(session['user_id']).bytes
 
-        # Create the order
         new_order = Order(
             id=uuid.uuid4().bytes,
             customer_id=customer_id_bytes,
@@ -139,7 +133,6 @@ def checkout():
         )
         db.session.add(new_order)
         
-        # Add items to the order
         for data in cart_items_data:
             item = data['item']
             quantity = data['quantity']
@@ -154,7 +147,6 @@ def checkout():
             
         db.session.commit()
         
-        # Clear the cart
         session.pop('cart', None)
         
         flash('Order placed successfully!', 'success')
@@ -179,23 +171,19 @@ def track_order(order_uuid):
     order_id_bytes = uuid.UUID(order_uuid).bytes
     order = Order.query.get(order_id_bytes)
     
-    # Security check
     customer_id_str = session.get('user_id')
     if not order or str(order.customer.get_uuid()) != customer_id_str:
         flash("Order not found.", 'danger')
         return redirect(url_for('customer_bp.view_orders'))
 
-    # Check if order is in a trackable state and we have all required locations
     if order.order_status != 'picked_up' or not order.rider.current_lat or not order.customer.current_lat:
         return render_template('customer/track_order_unavailable.html', order=order)
 
     rider_coords = (order.rider.current_lat, order.rider.current_lng)
     customer_coords = (order.customer.current_lat, order.customer.current_lng)
 
-    # Calculate distance
     distance_km = geodesic(rider_coords, customer_coords).kilometers
     
-    # Calculate ETA (speed in km/h)
     avg_speed_kph = 40.0
     eta_minutes = (distance_km / avg_speed_kph) * 60
 

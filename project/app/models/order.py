@@ -32,9 +32,8 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price_at_purchase = db.Column(db.Numeric(10, 2), nullable=False)
 
-    # Relationships
     order = db.relationship('Order', back_populates='order_items')
-    item = db.relationship('Item') # One-way relationship is fine here
+    item = db.relationship('Item')
 
     def get_uuid(self):
         return uuid.UUID(bytes=self.id)

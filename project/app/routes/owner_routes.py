@@ -1,4 +1,3 @@
-# /food-delivery-app/app/routes/owner_routes.py
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, abort
 from app import db
 from ..models.user import User
@@ -11,10 +10,8 @@ import uuid
 
 owner_bp = Blueprint('owner_bp', __name__)
 
-# Helper function to get the current owner's shop
 def get_current_shop():
     user_id_bytes = uuid.UUID(session['user_id']).bytes
-    # A user with an 'owner' role is guaranteed to have one shop
     shop = Shop.query.filter_by(owner_id=user_id_bytes).first()
     if not shop:
         abort(404, "Shop not found for the current user.")
@@ -25,7 +22,6 @@ def get_current_shop():
 @role_required('owner')
 def dashboard():
     shop = get_current_shop()
-    # Show orders that need action
     orders = Order.query.filter(
         Order.shop_id == shop.id,
         Order.order_status.in_(['pending', 'confirmed', 'preparing', 'ready_for_pickup'])
@@ -40,7 +36,6 @@ def update_order_status(order_uuid):
     order_id_bytes = uuid.UUID(order_uuid).bytes
     order = Order.query.get(order_id_bytes)
     
-    # Ensure the order belongs to the owner's shop
     if not order or order.shop_id != shop.id:
         flash("Order not found or you don't have permission to modify it.", 'danger')
         return redirect(url_for('owner_bp.dashboard'))
