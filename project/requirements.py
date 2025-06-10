@@ -4,3 +4,4 @@ Flask-Bcrypt
 python-dotenv
 PyMySQL
 geopy
+gunicorn
