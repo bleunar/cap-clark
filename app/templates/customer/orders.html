@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+{% block content %}
+<h2 class="mb-4">My Order History</h2>
+<div class="list-group">
+    {% for order in orders %}
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">Order #{{ order.get_uuid()|string|truncate(8, True, '') }}</h5>
+            <small>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        </div>
+        <p class="mb-1 text-capitalize">From: <strong>{{ order.shop.name }}</strong></p>
+        <p class="mb-1 text-capitalize">Total: <strong>${{ "%.2f"|format(order.total_price) }}</strong></p>
+        <p class="mb-1 text-capitalize">Status: <span class="badge bg-info text-dark">{{ order.order_status|replace('_', ' ')|title }}</span></p>
+        {% if order.order_status == 'picked_up' %}
+        <a href="{{ url_for('customer_bp.track_order', order_uuid=order.get_uuid()) }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-map"></i> Track Order
+        </a>
+        {% endif %}
+        </div>
+    {% else %}
+    <p>You haven't placed any orders yet.</p>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ shop.name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('customer_bp.dashboard') }}" class="btn btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Back to Shops</a>
+<div class="p-4 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold text-capitalize">{{ shop.name }}</h1>
+        <p class="fs-4 text-capitalize">{{ shop.address }}, {{ shop.town }}</p>
+    </div>
+</div>
+
+<h3 class="mb-3">Menu</h3>
+<div class="list-group">
+    {% for item in items %}
+    <div class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <div>
+                <h5 class="mb-1 text-capitalize">{{ item.name }}</h5>
+                <p class="mb-1 text-capitalize">{{ item.description or '...' }}</p>
+                <small>Price: ${{ "%.2f"|format(item.price) }}</small>
+            </div>
+            <form action="{{ url_for('customer_bp.add_to_cart', item_uuid=item.get_uuid()) }}" method="post" class="d-flex align-items-center">
+                <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 70px;">
+                <button type="submit" class="btn btn-success ms-2"><i class="bi bi-cart-plus"></i></button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <p>This shop currently has no items available.</p>
+    {% endfor %}
+</div>
+{% endblock %}

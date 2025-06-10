@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Owner Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class=" text-capitalize">Incoming Orders for {{ shop_name }}</h2>
+</div>
+
+<div class="accordion" id="ordersAccordion">
+    {% for order in orders %}
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="heading-{{ order.get_uuid() }}">
+            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ order.get_uuid() }}">
+                Order #{{ order.get_uuid()|string|truncate(8, True, '') }} - 
+                <span class="badge bg-warning text-dark ms-2">{{ order.order_status|replace('_', ' ')|title }}</span>
+                <span class="ms-auto me-3 text-capitalize">Customer: {{ order.customer.first_name }} {{ order.customer.last_name }}</span>
+            </button>
+        </h2>
+        <div id="collapse-{{ order.get_uuid() }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#ordersAccordion">
+            <div class="accordion-body">
+                <p class=" text-capitalize"><strong>Delivery Address:</strong> {{ order.delivery_address }}</p>
+                <h5>Items:</h5>
+                <ul class="list-group mb-3">
+                    {% for order_item in order.order_items %}
+                    <li class="list-group-item text-capitalize">{{ order_item.item.name }} - Quantity: {{ order_item.quantity }}</li>
+                    {% endfor %}
+                </ul>
+                <form action="{{ url_for('owner_bp.update_order_status', order_uuid=order.get_uuid()) }}" method="post" class="d-flex align-items-center">
+                    <label for="status-{{order.get_uuid()}}" class="form-label me-2">Update Status:</label>
+                    <select name="status" id="status-{{order.get_uuid()}}" class="form-select me-2" style="width: auto;">
+                        <option value="confirmed" {% if order.order_status == 'confirmed' %}selected{% endif %}>Confirm Order</option>
+                        <option value="preparing" {% if order.order_status == 'preparing' %}selected{% endif %}>Preparing</option>
+                        <option value="ready_for_pickup" {% if order.order_status == 'ready_for_pickup' %}selected{% endif %}>Ready for Pickup</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-success" role="alert">
+      No pending orders right now. Great job!
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

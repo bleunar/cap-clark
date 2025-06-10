@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4 text-center">Create Your Account</h2>
+        <form method="POST" action="{{ url_for('auth_bp.register') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+             <div class="mb-3">
+                <label for="phone_number" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone_number" name="phone_number" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">I am a...</label>
+                <select class="form-select" id="role" name="role" onchange="toggleShopFields()">
+                    <option value="customer" selected>Customer</option>
+                    <option value="owner">Shop Owner</option>
+                    <option value="rider">Delivery Rider</option>
+                </select>
+            </div>
+            <div id="shop-fields" style="display: none;">
+                <hr>
+                <h4 class="mb-3">Shop Information</h4>
+                <div class="mb-3">
+                    <label for="shop_name" class="form-label">Shop Name</label>
+                    <input type="text" class="form-control" id="shop_name" name="shop_name">
+                </div>
+                 <div class="mb-3">
+                    <label for="shop_address" class="form-label">Shop Full Address</label>
+                    <input type="text" class="form-control" id="shop_address" name="shop_address">
+                </div>
+                <div class="mb-3">
+                    <label for="shop_town" class="form-label">Town</label>
+                    <input type="text" class="form-control" id="shop_town" name="shop_town">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleShopFields() {
+        var role = document.getElementById('role').value;
+        var shopFields = document.getElementById('shop-fields');
+        var shopNameInput = document.getElementById('shop_name');
+        var shopAddressInput = document.getElementById('shop_address');
+        var shopTownInput = document.getElementById('shop_town');
+
+        if (role === 'owner') {
+            shopFields.style.display = 'block';
+            shopNameInput.required = true;
+            shopAddressInput.required = true;
+            shopTownInput.required = true;
+        } else {
+            shopFields.style.display = 'none';
+            shopNameInput.required = false;
+            shopAddressInput.required = false;
+            shopTownInput.required = false;
+        }
+    }
+    // Run on page load in case of validation error reload
+    document.addEventListener('DOMContentLoaded', toggleShopFields);
+</script>
+{% endblock %}

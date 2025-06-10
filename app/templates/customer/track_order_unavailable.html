@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Track Order{% endblock %}
+{% block content %}
+<a href="{{ url_for('customer_bp.view_orders') }}" class="btn btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Back to Orders</a>
+<h2 class="mb-4">Tracking Order #{{ order.get_uuid()|string|truncate(8, True, '') }}</h2>
+
+<div class="alert alert-warning" role="alert">
+  <h4 class="alert-heading">Tracking is not yet available.</h4>
+  <p>Live tracking becomes available once the rider has picked up your order and location data from both you and the rider has been received.</p>
+  <hr>
+  <p class="mb-0">Current status: <strong>{{ order.order_status|replace('_', ' ')|title }}</strong></p>
+</div>
+{% endblock %}

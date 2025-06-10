@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Rider Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4">Rider Dashboard</h2>
+
+{% if active_delivery %}
+<div class="card border-primary mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3>My Current Delivery</h3>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Order #{{ active_delivery.get_uuid()|string|truncate(8, True, '') }}</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Pickup From</h6>
+                        <p class="card-text text-capitalize"><strong>Shop:</strong> {{ active_delivery.shop.name }}</p>
+                        <p class="card-text text-capitalize"><strong>Address:</strong> {{ active_delivery.shop.address }}, {{ active_delivery.shop.town }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Deliver To</h6>
+                        <p class="card-text text-capitalize"><strong>Customer:</strong> {{ active_delivery.customer.first_name }}</p>
+                        <p class="card-text text-capitalize"><strong>Address:</strong> {{ active_delivery.delivery_address }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form action="{{ url_for('rider_bp.complete_delivery', order_uuid=active_delivery.get_uuid()) }}" method="post" onsubmit="return confirm('Are you sure you have completed this delivery?');">
+            <button type="submit" class="btn btn-lg btn-success w-100">
+                <i class="bi bi-check-circle-fill"></i> Mark as Delivered
+            </button>
+        </form>
+    </div>
+</div>
+
+{% else %}
+<div class="card">
+    <div class="card-header">
+        <h3>Available Deliveries</h3>
+    </div>
+    <div class="card-body">
+        {% if available_orders %}
+        <div class="list-group">
+            {% for order in available_orders %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Pickup:</strong> {{ order.shop.name }} ({{ order.shop.town }})
+                    <br>
+                    <strong>Deliver To:</strong> {{ order.delivery_address }}
+                </div>
+                <form action="{{ url_for('rider_bp.accept_delivery', order_uuid=order.get_uuid()) }}" method="post">
+                    <button type="submit" class="btn btn-primary">Accept Delivery</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center">No deliveries are ready for pickup right now. Please check back soon!</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}
