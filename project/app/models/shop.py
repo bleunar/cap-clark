@@ -15,7 +15,6 @@ class Shop(db.Model):
     is_open = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    # Relationships
     owner = db.relationship('User', back_populates='shop')
     items = db.relationship('Item', back_populates='shop', cascade="all, delete-orphan")
     orders = db.relationship('Order', back_populates='shop', lazy=True)

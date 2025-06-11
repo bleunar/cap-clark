@@ -3,7 +3,8 @@
 {% block content %}
 <h2 class="mb-4">Shopping Cart</h2>
 {% if cart_items %}
-<table class="table align-middle">
+<div class="p-4 bg-light rounded mb-3">
+    <table class="table align-middle">
     <thead>
         <tr>
             <th>Item</th>
@@ -28,13 +29,16 @@
         {% endfor %}
     </tbody>
 </table>
-<div class="text-end">
-    <h3>Total: ${{ "%.2f"|format(total_price) }}</h3>
-    <a href="{{ url_for('customer_bp.checkout') }}" class="btn btn-lg btn-success">Proceed to Checkout</a>
+</div>
+<div class="p-4 bg-light rounded">
+    <div class="text-end">
+    <h4>Total: ${{ "%.2f"|format(total_price) }}</h4>
+    <a href="{{ url_for('customer_bp.checkout') }}" class="btn btn-success">Proceed to Checkout</a>
 </div>
 {% else %}
 <div class="alert alert-info" role="alert">
     Your cart is empty. <a href="{{ url_for('customer_bp.dashboard') }}" class="alert-link">Start shopping!</a>
 </div>
 {% endif %}
+</div>
 {% endblock %}

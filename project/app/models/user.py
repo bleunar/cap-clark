@@ -16,7 +16,6 @@ class User(db.Model):
     current_lng = db.Column(db.Numeric(11, 8), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    # Relationships
     shop = db.relationship('Shop', back_populates='owner', uselist=False, cascade="all, delete-orphan")
     orders_placed = db.relationship('Order', foreign_keys='Order.customer_id', back_populates='customer', lazy=True)
     orders_handled = db.relationship('Order', foreign_keys='Order.rider_id', back_populates='rider', lazy=True)
