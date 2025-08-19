@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
+
+
 <div class="row justify-content-center">
     <div class="col-md-6 border p-4 rounded bg-white">
         <h2 class="mb-4 text-center">Login</h2>
-        <form method="POST" action="{{ url_for('auth_bp.login') }}">
+
+        <!-- Error message container -->
+        <div id="error-message" class="d-none bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+            role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">Incorrect answer to the security question. Please try again.</span>
+        </div>
+
+        <form id="login-form" method="POST" action="{{ url_for('auth_bp.login') }}">
             <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" required>
@@ -13,13 +23,108 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Login</button>
+            
+            <div class="mt-5">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Security Question: What is the sum?</label>
+                <div class="d-flex flex-row align-items-center gap-2 mb-3">
+                    <input type="text" id="num1" name="num1_display"
+                        class="form-control" disabled>
+
+                    <span class="text-xl font-bold">+</span>
+
+                    <input type="text" id="num2" name="num2_display"
+                        class="form-control" disabled>
+
+                    <span class="text-xl font-bold">=</span>
+
+                    <input type="text" id="user-answer" name="user_answer"
+                        class="form-control"
+                        required placeholder="...">
+                </div>
+            </div>
+
+            <input type="hidden" id="num1-hidden" name="num1">
+            <input type="hidden" id="num2-hidden" name="num2">
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="flex-fill btn btn-primary">Login</button>
             </div>
         </form>
         <p class="mt-3 text-center">
-            Don't have an account? <a href="{{ url_for('auth_bp.register') }}">Register here</a>
+            Don't have an account? <a href="{{ url_for('auth_bp.register') }}">Sign Up</a>
         </p>
     </div>
 </div>
+
+<script>
+    // Wait for the DOM to be fully loaded before running the script
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Get references to the HTML elements
+        const num1Field = document.getElementById('num1');
+        const num2Field = document.getElementById('num2');
+        const num1Hidden = document.getElementById('num1-hidden');
+        const num2Hidden = document.getElementById('num2-hidden');
+        const userAnswerField = document.getElementById('user-answer');
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- Function to generate random numbers and update the form ---
+        function generateNumbers() {
+            // Generate two random integers between 1 and 30
+            const randomNum1 = Math.floor(Math.random() * 20) + 1;
+            const randomNum2 = Math.floor(Math.random() * 10) + 1;
+
+            // Display the numbers in the disabled input fields
+            num1Field.value = randomNum1;
+            num2Field.value = randomNum2;
+
+            console.log(randomNum1, randomNum2)
+
+            // Set the values of the hidden fields to be sent to the server
+            num1Hidden.value = randomNum1;
+            num2Hidden.value = randomNum2;
+        }
+
+        // --- Event listener for the form submission ---
+        loginForm.addEventListener('submit', function (event) {
+            // Get the values from the form
+            const num1 = parseInt(num1Field.value, 10);
+            const num2 = parseInt(num2Field.value, 10);
+            const userAnswer = parseInt(userAnswerField.value, 10);
+
+            // Calculate the correct answer
+            const correctAnswer = num1 + num2;
+
+            // Check if the user's answer is correct
+            // isNaN(userAnswer) checks if the field is empty or not a number
+            if (userAnswer !== correctAnswer || isNaN(userAnswer)) {
+                // Prevent the form from submitting
+                event.preventDefault();
+
+                // Show the error message
+                errorMessage.classList.remove('d-none');
+
+                // Add a red border to the answer field for visual feedback
+                userAnswerField.classList.add('border-red-500');
+
+                // Generate new numbers for the next attempt
+                generateNumbers();
+
+                // Clear the user's incorrect answer
+                userAnswerField.value = '';
+            } else {
+                // If the answer is correct, hide any previous error messages
+                errorMessage.add('d-none');
+                userAnswerField.classList.remove('border-red-500');
+                // The form will submit as normal
+            }
+        });
+
+        // --- Initial call to generate numbers when the page loads ---
+        generateNumbers();
+    });
+</script>
+
+
 {% endblock %}

@@ -6,9 +6,35 @@ from ..models.item import Item
 from ..models.order import Order, OrderItem
 from .utils import login_required, role_required
 import uuid
-from geopy.distance import geodesic
+from math import radians, sin, cos, sqrt, atan2
 
 customer_bp = Blueprint('customer_bp', __name__)
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the great-circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # Radius of Earth in kilometers.
+    R = 6371.0 
+
+    # Convert decimal degrees to radians
+    lat1_rad = radians(lat1)
+    lon1_rad = radians(lon1)
+    lat2_rad = radians(lat2)
+    lon2_rad = radians(lon2)
+
+    # Difference in coordinates
+    dlon = lon2_rad - lon1_rad
+    dlat = lat2_rad - lat1_rad
+
+    # Haversine formula
+    a = sin(dlat / 2)**2 + cos(lat1_rad) * cos(lat2_rad) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    
+    distance = R * c
+    return distance
 
 @customer_bp.route('/dashboard')
 @login_required
@@ -182,10 +208,12 @@ def track_order(order_uuid):
     rider_coords = (order.rider.current_lat, order.rider.current_lng)
     customer_coords = (order.customer.current_lat, order.customer.current_lng)
 
-    distance_km = geodesic(rider_coords, customer_coords).kilometers
+    distance_km = haversine_distance(rider_coords[0], rider_coords[1], customer_coords[0], customer_coords[1])
     
-    avg_speed_kph = 40.0
+    avg_speed_kph = 30.0
     eta_minutes = (distance_km / avg_speed_kph) * 60
+
+    print('rider', customer_coords[0], customer_coords[1])
 
     return render_template(
         'customer/track_order.html', 

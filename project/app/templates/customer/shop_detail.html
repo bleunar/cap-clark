@@ -19,7 +19,7 @@
                 <div class="d-flex w-100 justify-content-between">
                     <div>
                         <h5 class="mb-1 text-capitalize">{{ item.name }}</h5>
-                        <small>Price: ${{ "%.2f"|format(item.price) }}</small>
+                        <small>Price: ₱{{ "%.2f"|format(item.price) }}</small>
                     </div>
                     <form action="{{ url_for('customer_bp.add_to_cart', item_uuid=item.get_uuid()) }}" method="post"
                         class="d-flex align-items-center">

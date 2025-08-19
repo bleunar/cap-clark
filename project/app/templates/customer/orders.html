@@ -10,16 +10,18 @@
             <small>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
         </div>
         <p class="mb-1 text-capitalize">From: <strong>{{ order.shop.name }}</strong></p>
-        <p class="mb-1 text-capitalize">Total: <strong>${{ "%.2f"|format(order.total_price) }}</strong></p>
-        <p class="mb-1 text-capitalize">Status: <span class="badge bg-info text-dark">{{ order.order_status|replace('_', ' ')|title }}</span></p>
+        <p class="mb-1 text-capitalize">Total: <strong>₱{{ "%.2f"|format(order.total_price) }}</strong></p>
+        <p class="mb-1 text-capitalize">Status: <span class="badge bg-info text-dark">{{ order.order_status|replace('_',
+                ' ')|title }}</span></p>
         {% if order.order_status == 'picked_up' %}
         <div class="d-flex justify-content-end">
-                    <a href="{{ url_for('customer_bp.track_order', order_uuid=order.get_uuid()) }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-map"></i> Track Order
-        </a>
+            <a href="{{ url_for('customer_bp.track_order', order_uuid=order.get_uuid()) }}"
+                class="btn btn-primary btn-sm">
+                <i class="bi bi-map"></i> Track Order
+            </a>
         </div>
         {% endif %}
-        </div>
+    </div>
     {% else %}
     <p>You haven't placed any orders yet.</p>
     {% endfor %}

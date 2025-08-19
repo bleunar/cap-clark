@@ -20,7 +20,7 @@
             {% for item in items %}
             <tr>
                 <td class=" text-capitalize">{{ item.name }}</td>
-                <td>${{ "%.2f"|format(item.price) }}</td>
+                <td>{{ "%.2f"|format(item.price) }}</td>
                 <td>
                     {% if item.is_available %}
                     <span class="badge bg-success">Available</span>
