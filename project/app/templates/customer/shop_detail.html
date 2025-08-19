@@ -3,10 +3,11 @@
 {% block content %}
 <a href="{{ url_for('customer_bp.dashboard') }}" class="btn btn-primary mb-3"><i class="bi bi-arrow-left"></i>
     Back to Shops</a>
-<div class="p-4 mb-4 bg-light rounded-3">
+
+<div class="p-4 mb-4 bg-light rounded-3 shadow">
     <div class="container-fluid py-3">
-        <h1 class="display-5 fw-bold text-capitalize">{{ shop.name }}</h1>
-        <p class="fs-4 text-capitalize">{{ shop.address }}, {{ shop.town }}</p>
+        <h4 class="display-5 fw-bold text-capitalize">{{ shop.name }}</h4>
+        <p class="fs-4 text-capitalize">{{ shop.address }}</p>
     </div>
 </div>
 <div class="p-4 mb-4 bg-light rounded-3">

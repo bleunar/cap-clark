@@ -4,7 +4,7 @@
 <h2 class="mb-4">My Order History</h2>
 <div class="list-group">
     {% for order in orders %}
-    <div class="list-group-item">
+    <div class="rounded border p-3 shadow bg-light mb-3">
         <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">Order #{{ order.get_uuid()|string|truncate(8, True, '') }}</h5>
             <small>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
